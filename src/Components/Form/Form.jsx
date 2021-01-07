@@ -7,6 +7,7 @@ import useStyles from "./styles";
 
 const Form = ({ currentId, setCurrentId }) => {
   const classes = useStyles();
+
   const [postData, setPostData] = useState({
     creator: "",
     title: "",
@@ -14,13 +15,15 @@ const Form = ({ currentId, setCurrentId }) => {
     tags: "",
     selectedFile: "",
   });
-  //return single post
+
+  //return a single post of currentId
   const post = useSelector((state) =>
     currentId ? state.posts.find((p) => p._id === currentId) : null
   );
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // if post contain data then it will populate form fields
     if (post) {
       setPostData(post);
     }
@@ -38,6 +41,7 @@ const Form = ({ currentId, setCurrentId }) => {
   };
 
   const clear = () => {
+    //as soon as cuurentId will be null the useEffect in App.js run to get all the post
     setCurrentId(null);
     setPostData({
       creator: "",

@@ -4,7 +4,10 @@ import Post from "./Post/Post";
 import useStyles from "./styles";
 
 const Posts = ({setCurrentId}) => {
+
+  // getting posts from redux state
   const posts = useSelector(state => state.posts)
+
   const classes = useStyles();
 
   return (
