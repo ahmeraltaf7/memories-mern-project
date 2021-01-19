@@ -16,31 +16,48 @@ import { deletePost, likePost } from "../../../Redux/actions/posts";
 
 const Post = ({
   _id,
+  name,
   creator,
   title,
   message,
   tags,
   createdAt,
-  likeCount,
+  likes,
   selectedFile,
   setCurrentId
 }) => {
 
   const classes = useStyles();
   const dispatch = useDispatch();
+  const user= JSON.parse(localStorage.getItem("profile"));
+
+  const Likes = () => {
+    if (likes.length > 0) {
+      return likes.find((like) => like === (user?.result?.googleId || user?.result?._id))
+        ? (
+          <><ThumbUpAltIcon fontSize="small" />&nbsp;{likes.length > 2 ? `You and ${likes.length - 1} others` : `${likes.length} like${likes.length > 1 ? 's' : ''}` }</>
+        ) : (
+          <><ThumbUpAltIcon fontSize="small" />&nbsp;{likes.length} {likes.length === 1 ? 'Like' : 'Likes'}</>
+        );
+    }
+
+    return <><ThumbUpAltIcon fontSize="small" />&nbsp;Like</>;
+  };
 
   return (
     <Card className={classes.card}>
       <CardMedia className={classes.media} image={selectedFile} title={title} />
       <div className={classes.overlay}>
-        <Typography variant="h6">{creator}</Typography>
+        <Typography variant="h6">{name}</Typography>
         <Typography variant="body2">{moment(createdAt).fromNow()}</Typography>
       </div>
+      {(user?.result?.googleId === creator || user?.result?._id === creator) && (
       <div className={classes.overlay2}>
         <Button style={{ color: 'white' }} size="small" onClick={() => setCurrentId(_id)}>
           <MoreHorizIcon fontSize="default" />
         </Button>
       </div>
+      )}
       <div className={classes.details}>
         <Typography variant="body2" color="secondary">
           {tags.map((tag) => `#${tag} `)}
@@ -55,15 +72,14 @@ const Post = ({
         </Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
-        <Button size="small" color=" primary" onClick={() => dispatch(likePost(_id))}>
-          <ThumbUpAltIcon fontSize="small" />
-          &nbsp; Like &nbsp;
-          {likeCount}
+        <Button size="small" color=" primary" disabled={!user?.result} onClick={() => dispatch(likePost(_id))}>
+        <Likes />
         </Button>
-        <Button size="small" color=" primary" onClick={() => dispatch(deletePost(_id))}>
-          <DeleteIcon fontSize="small" />
-          Delete
+        {(user?.result?.googleId === creator || user?.result?._id === creator) && (
+        <Button size="small" color="secondary" onClick={() => dispatch(deletePost(_id))}>
+          <DeleteIcon fontSize="small" /> Delete
         </Button>
+        )}
       </CardActions>
     </Card>
   );

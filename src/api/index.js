@@ -1,18 +1,32 @@
 import axios from "axios";
 
-const url = "https://memories-project-2.herokuapp.com/posts";
+const API = axios.create({baseURL: 'https://memories-project-2.herokuapp.com'})
+
+//This will run before every api request
+API.interceptors.request.use((req) =>{
+    if(localStorage.getItem('profile')) {
+        req.headers.Authorization = `Bearer ${JSON.parse(localStorage.getItem('profile')).token}`
+    }
+    return req;
+})
 
 //To get all the posts 
-export const fetchPosts = () => axios.get(url);
+export const fetchPosts = () => API.get('/posts');
 
 //To Post a post
-export const createPost =(newPost) => axios.post(url, newPost)
+export const createPost =(newPost) => API.post('/posts', newPost)
 
 //To Update a post
-export const updatePost =(id, updatedPost) => axios.patch(`${url}/${id}`, updatedPost)
+export const updatePost =(id, updatedPost) => API.patch(`/posts/${id}`, updatedPost)
 
 //To Delete a post
-export const deletePost =(id) => axios.delete(`${url}/${id}`)
+export const deletePost =(id) => API.delete(`/posts/${id}`)
 
 //To Like a post
-export const likePost =(id) => axios.patch(`${url}/${id}/likePost`)
+export const likePost =(id) => API.patch(`/posts/${id}/likePost`)
+
+//To Sign In
+export const signIn =(formData) => API.post(`/user/signin`, formData)
+
+//To Sign Up
+export const signUp =(formData) => API.post(`/user/signup`, formData)
